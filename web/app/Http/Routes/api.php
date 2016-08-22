@@ -1,4 +1,2 @@
 <?php
-Route::get('config.ini', function () {
-    return 'test';
-});
+Route::get('config.ini', 'ApiController@downloadConfig');

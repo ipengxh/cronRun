@@ -14,3 +14,6 @@
 foreach (File::allFiles(__DIR__ . '/Routes') as $routeFile) {
     require $routeFile->getPathname();
 }
+
+
+Route::auth();
