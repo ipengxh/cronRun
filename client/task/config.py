@@ -3,7 +3,7 @@
 
 from ConfigParser import *
 import pyinotify
-import os, sys, threading
+import os, sys, threading, time
 import datetime
 import logging
 import schedule
@@ -65,24 +65,30 @@ class EventHandler(pyinotify.ProcessEvent):
         self.taskThread = taskThread
 
     def process_IN_CREATE(self, event):
-        print "CREATE event:", event.pathname, self.config
         # boot a new task if schedule created
-
-        logging.info("CREATE event : %s  %s" % (os.path.join(event.path,event.name),datetime.datetime.now()))
+        file = os.path.splitext(event.name)
+        if '.ini' == file[1]:
+            logging.info("CREATE event:", event.pathname, self.config, datetime.datetime.now())
+            time.sleep(0.1) # wait for file ready
+            taskThread = schedule.schedule(os.path.join(event.path,event.name))
+            taskThread.start()
+            monitor = scheduleMonitor(os.path.join(event.path,event.name), taskThread)
+            monitor.start()
+            print 'start to monitoring', self.config
+            logging.info("CREATE event : %s  %s" % (os.path.join(event.path,event.name),datetime.datetime.now()))
 
     def process_IN_DELETE(self, event):
-        print "DELETE event:", event.pathname, self.config
         if self.taskThread is not False:
-            print 'Task schedule config file deleted, task quit.'
+            logging.notice('Task schedule config file deleted, task quit.', datetime.datetime.now())
             self.taskThread.stop()
             sys.exit()
         logging.info("DELETE event : %s  %s" % (os.path.join(event.path,event.name),datetime.datetime.now()))
 
     def process_IN_MODIFY(self, event):
-        print "MODIFY event:", event.pathname, self.config
         if self.taskThread is not False:
             print 'Task schedule config file deleted, task quit.'
             self.taskThread.stop()
+            time.sleep(0.1) # wait for file ready
             # reboot schedule
             taskThread = schedule.schedule(self.config)
             taskThread.start()
