@@ -1,4 +1,4 @@
 #!/usr/bin/python
 # -*-coding:utf-8 -*-
 
-__all__ = ['CronRun', 'Task']
+__all__ = ['matrix', 'schedule', 'config']

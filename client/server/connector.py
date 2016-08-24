@@ -1,10 +1,9 @@
-class Connector(object):
+class connector(object):
     """docstring for Connector"""
     def __init__(self, config):
         self.config = config
 
     def connect(self):
-        return True
         raise ConnectorException('Could not connect to server, start to run a self hosting cron run client.')
 
 class ConnectorException(Exception):
