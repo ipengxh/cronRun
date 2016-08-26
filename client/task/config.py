@@ -86,7 +86,7 @@ class EventHandler(pyinotify.ProcessEvent):
 
     def process_IN_MODIFY(self, event):
         if self.taskThread is not False:
-            print 'Task schedule config file deleted, task quit.'
+            print 'Task schedule config file modified, task quit, reboot another thread.'
             self.taskThread.stop()
             time.sleep(0.1) # wait for file ready
             # reboot schedule
@@ -98,18 +98,3 @@ class EventHandler(pyinotify.ProcessEvent):
             print 'start to monitoring', self.config
             sys.exit()
         logging.info("MODIFY event : %s  %s" % (os.path.join(event.path,event.name),datetime.datetime.now()))
-
-def get(a, b):
-    parser = ConfigParser()
-    parser.read('config.ini')
-    return parser.get(a, b)
-
-def watcher():
-    WatchManager = pyinotify.WatchManager()
-    WatchManager.add_watch('./', pyinotify.ALL_EVENTS, rec = True)
-    EventHandler = EventHandler()
-    notifier = pyinotify.Notifier(WatchManager, EventHandler)
-    notifier.loop()
-
-if __name__ == '__main__':
-    watcher()
