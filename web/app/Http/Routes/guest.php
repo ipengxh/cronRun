@@ -1,4 +1,11 @@
 <?php
 
+/**
+ * Unauthed
+ */
 
-Route::get('/home', 'HomeController@index');
+Route::get('/', function () {
+    return redirect('/dashboard');
+});
+
+Route::get('/dashboard', 'HomeController@index');

@@ -23,8 +23,8 @@ class schedule(threading.Thread):
     def __init__(self, configFile):
         threading.Thread.__init__(self)
         self.configFile = configFile
-        self.parser = ConfigParser()
-        self.parser.read(configFile)
+        self.config = ConfigParser()
+        self.config.read(configFile)
         self.schedule = {'status': True}
         print configFile, 'has been loaded'
         self.thread_stop = False
@@ -34,22 +34,12 @@ class schedule(threading.Thread):
         conf = config.schedule(self.configFile)
         conf.watch()
 
-    '''get config'''
-    def config(self, section, option, type = None):
-        if 'int' == type:
-            return self.parser.getint(section, option)
-        if 'float' == type:
-            return self.parser.getfloat(section, option)
-        if 'boolean' == type:
-            return self.parser.getboolean(section, option)
-        return self.parser.get(section, option)
-
     '''schedule manager'''
     def run(self):
         self.boot_time = datetime.datetime.now()
         self.run_times = 0
         try:
-            interval = self.config('schedule', 'interval', 'float')
+            interval = self.config.getfloat('schedule', 'interval')
         except ValueError:
             interval = False
         while not self.thread_stop:
@@ -61,7 +51,7 @@ class schedule(threading.Thread):
     def run_interval_task(self, interval):
         thread = threading.Thread(target = self.execute)
         thread.start()
-        thread.join(self.config('error', 'timeout', 'float'))
+        thread.join(self.config.getfloat('error', 'timeout'))
         self.run_times += 1
         # can not sleep exactly "interval" seconds, a few time passed while
         # these codes running, it could make the schedule run a little later
@@ -71,7 +61,7 @@ class schedule(threading.Thread):
         time.sleep(needs_sleep)
 
     def run_timer_task(self):
-        timers = self.config('schedule', 'timer').split(',')
+        timers = self.config.get('schedule', 'timer').split(',')
         time_format = '%Y-%m-%d %H:%M:%S'
         now = datetime.datetime.now()
         now.strftime(time_format)
@@ -96,7 +86,7 @@ class schedule(threading.Thread):
         if not self.thread_stop:
             thread = threading.Thread(target = self.execute)
             thread.start()
-            thread.join(self.config('error', 'timeout', 'float'))
+            thread.join(self.config.getfloat('error', 'timeout'))
 
     # modify the stop flag
     def stop(self):
@@ -104,7 +94,7 @@ class schedule(threading.Thread):
 
     # execute the task
     def execute(self):
-        subProgress = subprocess.Popen(self.config('app', 'command'), shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+        subProgress = subprocess.Popen(self.config.get('app', 'command'), shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
 
     # get next running time
     def next_time(self, timer):
