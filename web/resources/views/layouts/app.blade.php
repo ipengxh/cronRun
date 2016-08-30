@@ -58,38 +58,38 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
-                @if (Request::is('server/*'))
+                @if (Request::is('task/*') or Request::is('tasks'))
                     <li class="active">
                 @else
                     <li>
                 @endif
-                        <a href="{{ url('/server/index') }}">
-                            <i class="fa fa-cloud"></i>
-                            Servers
+                        <a href="{{ url('/tasks') }}">
+                            <i class="fa fa-tasks"></i>
+                            Tasks
                         </a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
-                @if (Request::is('project/*'))
+                @if (Request::is('project/*') or Request::is('projects'))
                     <li class="active">
                 @else
                     <li>
                 @endif
-                        <a href="{{ url('/project/index') }}">
+                        <a href="{{ url('/projects') }}">
                             <i class="fa fa-laptop"></i>
                             Projects
                         </a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
-                @if (Request::is('task/*'))
+                @if (Request::is('server/*') or Request::is('servers'))
                     <li class="active">
                 @else
                     <li>
                 @endif
-                        <a href="{{ url('/task/index') }}">
-                            <i class="fa fa-tasks"></i>
-                            Tasks
+                        <a href="{{ url('/servers') }}">
+                            <i class="fa fa-cloud"></i>
+                            Servers
                         </a>
                     </li>
                 </ul>
@@ -113,7 +113,11 @@
                         <li><a href="{{ url('/login') }}">Login</a></li>
                         <li><a href="{{ url('/register') }}">Register</a></li>
                     @else
+                        @if (Request::is('profile'))
+                        <li class="dropdown active">
+                        @else
                         <li class="dropdown">
+                        @endif
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 <i class="fa fa fa-user"></i>
                                 {{ Auth::user()->name }} <span class="caret"></span>

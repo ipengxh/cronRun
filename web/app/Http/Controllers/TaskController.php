@@ -10,7 +10,7 @@ class TaskController extends Controller
 {
     public function index()
     {
-        return view('home');
+        return view('task.index');
     }
 
     public function show()

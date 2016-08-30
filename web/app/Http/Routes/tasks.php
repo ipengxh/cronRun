@@ -1,17 +1,20 @@
 <?php
 
-Route::group(['middleware' => 'auth', 'prefix' => 'task'], function () {
-    Route::get('index', 'TaskController@index');
+Route::group(['middleware' => 'auth'], function () {
 
-    Route::get('show', 'TaskController@show');
+    Route::get('tasks', 'TaskController@index');
 
-    Route::get('create', 'TaskController@create');
+    Route::group(['prefix' => 'task'], function () {
+        Route::get('show', 'TaskController@show');
 
-    Route::post('store', 'TaskController@store');
+        Route::get('create', 'TaskController@create');
 
-    Route::get('edit/{id}', 'TaskController@edit');
+        Route::post('store', 'TaskController@store');
 
-    Route::post('update/{id}', 'TaskController@update');
+        Route::get('edit/{id}', 'TaskController@edit');
 
-    Route::post('destroy/{id}', 'TaskController@destroy');
+        Route::post('update/{id}', 'TaskController@update');
+
+        Route::post('destroy/{id}', 'TaskController@destroy');
+    });
 });
