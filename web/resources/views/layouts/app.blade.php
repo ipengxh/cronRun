@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
 
-    <title>Laravel</title>
+    <title>Cron Run</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" href="/font-awesome/4.6.3/css/font-awesome.min.css">
@@ -17,6 +18,7 @@
     <style>
         body {
             font-family: 'Monaco', 'Courier New', 'Courier';
+            padding-top: 70px;
         }
 
         .fa-btn {
@@ -25,7 +27,7 @@
     </style>
 </head>
 <body id="app-layout">
-    <nav class="navbar navbar-default navbar-static-top">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
 
@@ -39,7 +41,7 @@
 
                 <!-- Branding Image -->
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    cronRun
+                    CronRun
                 </a>
             </div>
 
@@ -47,12 +49,12 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="nav navbar-nav">
                 @if (Request::is('dashboard'))
-                    <li class="active">
+                    <li class="active info">
                 @else
                     <li>
                 @endif
                         <a href="{{ url('/dashboard') }}">
-                            <i class="fa fa-dashboard"></i>
+                            <i class="fa fa-dashboard info"></i>
                             Dashboard
                         </a>
                     </li>
@@ -133,12 +135,22 @@
             </div>
         </div>
     </nav>
-
+    @if (count($errors))
+    <div class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
     @yield('content')
 
     <!-- JavaScripts -->
     <script src="/jquery/3.1.0/jquery.min.js"></script>
     <script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    @yield('footer')
     {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
 </body>
 </html>

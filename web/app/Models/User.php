@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -23,4 +23,19 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function server()
+    {
+        return $this->hasMany(Server::class, 'owner');
+    }
+
+    public function project()
+    {
+        return $this->hasMany(Project::class, 'owner');
+    }
+
+    public function task()
+    {
+        return $this->hasMany(Task::class, 'owner');
+    }
 }
