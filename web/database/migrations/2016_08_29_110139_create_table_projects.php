@@ -19,6 +19,8 @@ class CreateTableProjects extends Migration
             ->comment = "project name";
             $table->string('key')
             ->comment = "project key";
+            $table->integer('node_id')->unsigned()
+            ->comment = "belongs to node";
 
             $table->integer('owner')->unsigned()
             ->comment = "project creator";
@@ -37,10 +39,7 @@ class CreateTableProjects extends Migration
             $table->enum('role', ['manager', 'watcher'])->default('watcher')
             ->comment = "user is a project manager or project watcher";
 
-            $table->foreign('project_id')->references('id')->on('projects')
-            ->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')
-            ->onUpdate('cascade')->onDelete('cascade');
+            $table->unique(['project_id', 'user_id']);
 
             $table->engine = "InnoDB";
         });
@@ -54,5 +53,6 @@ class CreateTableProjects extends Migration
     public function down()
     {
         Schema::drop('projects');
+        Schema::drop('project_permissions');
     }
 }

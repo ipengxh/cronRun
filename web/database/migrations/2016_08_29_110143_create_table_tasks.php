@@ -19,6 +19,8 @@ class CreateTableTasks extends Migration
             ->comment = "task name";
             $table->string('key')
             ->comment = "task key";
+            $table->integer('project_id')->unsigned()
+            ->comment = "belongs to project";
 
             $table->integer('owner')->unsigned()
             ->comment = "task creator";
@@ -37,10 +39,7 @@ class CreateTableTasks extends Migration
             $table->enum('role', ['manager', 'watcher'])->default('watcher')
             ->comment = "user is a task manager or task watcher";
 
-            $table->foreign('task_id')->references('id')->on('tasks')
-            ->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')
-            ->onUpdate('cascade')->onDelete('cascade');
+            $table->unique(['task_id', 'user_id']);
 
             $table->engine = "InnoDB";
         });
@@ -54,5 +53,6 @@ class CreateTableTasks extends Migration
     public function down()
     {
         Schema::drop('tasks');
+        Schema::drop('task_permissions');
     }
 }

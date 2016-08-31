@@ -4,29 +4,29 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
 
-    <title>Cron Run</title>
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Fonts -->
-    <link rel="stylesheet" href="/font-awesome/4.6.3/css/font-awesome.min.css">
+    <title>Laravel</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/bootstrap/3.3.7/css/bootstrap.min.css">
-    {{-- <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> --}}
-
+    <link href="/css/app.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/font-awesome/4.6.3/css/font-awesome.min.css">
     <style>
         body {
             font-family: 'Monaco', 'Courier New', 'Courier';
             padding-top: 70px;
         }
-
-        .fa-btn {
-            margin-right: 6px;
-        }
     </style>
+    <!-- Scripts -->
+    <script>
+        window.Laravel = <?php echo json_encode([
+            'csrfToken' => csrf_token(),
+        ]); ?>
+    </script>
 </head>
-<body id="app-layout">
+<body>
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -84,14 +84,14 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
-                @if (Request::is('server/*') or Request::is('servers'))
+                @if (Request::is('node/*') or Request::is('nodes'))
                     <li class="active">
                 @else
                     <li>
                 @endif
-                        <a href="{{ url('/servers') }}">
+                        <a href="{{ url('/nodes') }}">
                             <i class="fa fa-cloud"></i>
-                            Servers
+                            Nodes
                         </a>
                     </li>
                 </ul>
@@ -147,10 +147,8 @@
     @endif
     @yield('content')
 
-    <!-- JavaScripts -->
-    <script src="/jquery/3.1.0/jquery.min.js"></script>
-    <script src="/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- Scripts -->
+    <script src="/js/app.js"></script>
     @yield('footer')
-    {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
 </body>
 </html>

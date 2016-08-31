@@ -9,11 +9,17 @@ class Project extends Model
     protected $fillable = [
         'name',
         'key',
-        'owner'
+        'owner',
+        'node_id'
     ];
 
     public function user()
     {
-        return $this->belongsTo(\App\User::class, 'owner');
+        return $this->belongsTo(User::class, 'owner');
+    }
+
+    public function node()
+    {
+        return $this->belongsTo(Node::class);
     }
 }
