@@ -16,9 +16,11 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-
+Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 Route::get('/home', 'HomeController@index');
 
+
+Route::get('/node/register', 'NodeController@register');
 
 /**
  * Unauthed
@@ -39,8 +41,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('show', 'NodeController@show');
 
         Route::get('create', 'NodeController@create');
-
-        Route::post('store', 'NodeController@store');
 
         Route::get('edit/{id}', 'NodeController@edit');
 

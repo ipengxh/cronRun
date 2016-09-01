@@ -15,27 +15,27 @@ class CreateTableNodes extends Migration
         Schema::create('nodes', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->string('name')
-            ->comment = "node name";
-            $table->string('key')
-            ->comment = "node key";
+            $table->string('name');
+            $table->string('key');
 
             $table->integer('owner')->unsigned()
-            ->comment = "node creator";
+            ->comment = "the user id of node creator";
 
             $table->timestamps();
-            $table->softDeletes();
 
             $table->engine = "InnoDB";
         });
 
         Schema::create('node_permissions', function (Blueprint $table) {
-            $table->integer('node_id')->unsigned()
-            ->comment = "node id";
-            $table->integer('user_id')->unsigned()
-            ->comment = "user id";
+            $table->integer('node_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->enum('role', ['manager', 'watcher'])->default('watcher')
-            ->comment = "user is a node manager or node watcher";
+            ->comment = "this user is a node manager or node watcher";
+
+            $table->foreign('node_id')->references('id')->on('nodes')
+            ->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')
+            ->onDelete('cascade');
 
             $table->unique(['node_id', 'user_id']);
 
@@ -50,7 +50,7 @@ class CreateTableNodes extends Migration
      */
     public function down()
     {
-        Schema::drop('nodes');
         Schema::drop('node_permissions');
+        Schema::drop('nodes');
     }
 }

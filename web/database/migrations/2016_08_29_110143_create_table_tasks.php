@@ -15,10 +15,8 @@ class CreateTableTasks extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->string('name')
-            ->comment = "task name";
-            $table->string('key')
-            ->comment = "task key";
+            $table->string('name');
+            $table->string('key');
             $table->integer('project_id')->unsigned()
             ->comment = "belongs to project";
 
@@ -32,12 +30,15 @@ class CreateTableTasks extends Migration
         });
 
         Schema::create('task_permissions', function (Blueprint $table) {
-            $table->integer('task_id')->unsigned()
-            ->comment = "task id";
-            $table->integer('user_id')->unsigned()
-            ->comment = "user id";
+            $table->integer('task_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->enum('role', ['manager', 'watcher'])->default('watcher')
             ->comment = "user is a task manager or task watcher";
+
+            $table->foreign('task_id')->references('id')->on('tasks')
+            ->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')
+            ->onDelete('cascade');
 
             $table->unique(['task_id', 'user_id']);
 
@@ -52,7 +53,7 @@ class CreateTableTasks extends Migration
      */
     public function down()
     {
-        Schema::drop('tasks');
         Schema::drop('task_permissions');
+        Schema::drop('tasks');
     }
 }

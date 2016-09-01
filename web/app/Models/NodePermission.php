@@ -13,7 +13,7 @@ class NodePermission extends Model
         'role'
     ];
 
-    protected $dates = false;
+    public $timestamps = null;
 
     public function node()
     {
@@ -27,16 +27,24 @@ class NodePermission extends Model
 
     public function scopeOwn($query)
     {
-        return $query->whereUserId(\Auth::user()->id);
+        return $query->with('user', 'node')
+        ->whereUserId(\Auth::user()->id)
+        ->get();
     }
 
     public function scopeManage($query)
     {
-        return $this->scopeOwn($query)->whereRole('manager');
+        return $query->with('user', 'node')
+        ->whereUserId(\Auth::user()->id)
+        ->whereRole('manager')
+        ->get();
     }
 
     public function scopeWatch($query)
     {
-        return $this->scopeOwn($query)->whereRole('watcher');
+        return $query->with('user', 'node')
+        ->whereUserId(\Auth::user()->id)
+        ->whereRole('watcher')
+        ->get();
     }
 }

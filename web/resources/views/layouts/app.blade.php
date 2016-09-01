@@ -8,11 +8,13 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Laravel</title>
+    <title>CronRun</title>
 
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/font-awesome/4.6.3/css/font-awesome.min.css">
+    <!-- Scripts -->
+    <script src="/js/app.js"></script>
     <style>
         body {
             font-family: 'Monaco', 'Courier New', 'Courier';
@@ -146,9 +148,6 @@
     </div>
     @endif
     @yield('content')
-
-    <!-- Scripts -->
-    <script src="/js/app.js"></script>
-    @yield('footer')
 </body>
+@yield('footer')
 </html>

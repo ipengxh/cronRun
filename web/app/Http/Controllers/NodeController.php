@@ -13,11 +13,10 @@ use DB;
 
 class NodeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $nodes = NodePermission::with('user', 'node')
-        ->own()->get();
-        return view('node.index');
+        $nodes = NodePermission::own();
+        return view('node.index', compact('nodes'));
     }
 
     public function register(Request $request)

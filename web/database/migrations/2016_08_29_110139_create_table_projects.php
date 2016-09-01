@@ -15,10 +15,8 @@ class CreateTableProjects extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->string('name')
-            ->comment = "project name";
-            $table->string('key')
-            ->comment = "project key";
+            $table->string('name');
+            $table->string('key');
             $table->integer('node_id')->unsigned()
             ->comment = "belongs to node";
 
@@ -32,12 +30,15 @@ class CreateTableProjects extends Migration
         });
 
         Schema::create('project_permissions', function (Blueprint $table) {
-            $table->integer('project_id')->unsigned()
-            ->comment = "project id";
-            $table->integer('user_id')->unsigned()
-            ->comment = "user id";
+            $table->integer('project_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->enum('role', ['manager', 'watcher'])->default('watcher')
-            ->comment = "user is a project manager or project watcher";
+            ->comment = "this user is a project manager or project watcher";
+
+            $table->foreign('project_id')->references('id')->on('projects')
+            ->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')
+            ->onDelete('cascade');
 
             $table->unique(['project_id', 'user_id']);
 
@@ -52,7 +53,7 @@ class CreateTableProjects extends Migration
      */
     public function down()
     {
-        Schema::drop('projects');
         Schema::drop('project_permissions');
+        Schema::drop('projects');
     }
 }
