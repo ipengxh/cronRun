@@ -1,51 +1,63 @@
 @extends('layouts.app')
-
 @section('content')
 <div class="container">
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
-                <div class="panel-heading" id="test">
-                    Servers
+                <div class="panel-heading">
+                    Nodes
+                    <button class="btn btn-default btn-xs pull-right hotkey-n" id="new-node-button">
+                        <i class="fa fa-plus"></i>
+                        <u>N</u>ew node
+                    </button>
                 </div>
                 <div class="panel-body">
+                    <form action="{{ url('/node/store') }}" method="POST" class="form-horizontal hide" role="form" id="new-node-form">
+                        {{ csrf_field() }}
+                        <div class="form-group form-group-sm">
+                            <label for="name" class="col-sm-2 control-label">New node:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" name="name" id="name">
+                            </div>
+                            <div class="col-sm-1">
+                                <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                            </div>
+                        </div>
+                    </form>
                     <table class="table table-striped table-hover table-condensed">
                         <thead>
                             <tr>
-                                <th>Server name</th>
-                                <th>Key</th>
-                                <th>Created at</th>
-                                <th>Last Active</th>
-                                <th>Created by</th>
-                                <th>Authority</th>
+                                <th>Node name</th>
+                                <th>Projects</th>
+                                <th>Last active at</th>
                                 <th>Options</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($nodes as $node)
                             <tr>
-                                <td>{{ $node->node->name }}</td>
+                                <td>{{ $node->name }}</td>
                                 <td>
-                                    {{ $node->node->key }}
-                                    <button class="btn btn-default btn-xs" title="Click to copy" data-toggle="tooltip" data-placement="top">
-                                        <i class="fa fa-copy"></i>
-                                    </button>
+                                    <a href="{{ route('node:projects', $node->id) }}">
+                                        {{ count($node->project) }}
+                                    </a>
                                 </td>
-                                <td>{{ $node->node->created_at }}</td>
-                                <td>{{ Redis::get('node:last_active:'.$node->node->id) }}</td>
-                                <td>{{ $node->user->name }}</td>
-                                <td>{{ $node->role }}</td>
                                 <td>
-                                    @if ('manager' == $node->role)
-                                    <button type="button" class="btn btn-primary btn-xs">
-                                        <i class="fa fa-edit"></i>
-                                        Edit
-                                    </button>
+                                    {{ Redis::get('node:last_active:time:'.$node->id) ?? 'Never actived' }}
+                                </td>
+                                <td>
+                                    <a type="button" class="btn btn-info btn-xs">
+                                    <i class="fa fa-info"></i>
+                                    More info
+                                    </a>
+                                    <a class="btn btn-primary btn-xs" href="{{ route('node:edit', $node->id) }}">
+                                    <i class="fa fa-edit"></i>
+                                    Edit
+                                    </a>
                                     <button type="button" class="btn btn-danger btn-xs">
-                                        <i class="fa fa-remove"></i>
-                                        Remove
+                                    <i class="fa fa-remove"></i>
+                                    Remove
                                     </button>
-                                    @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -60,7 +72,10 @@
 @section('footer')
 <script>
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
+        $("#new-node-button").bind('click', function () {
+            $("#new-node-form").toggleClass('hide');
+            $("#name").focus();
+        });
     });
 </script>
 @endsection

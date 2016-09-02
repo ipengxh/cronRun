@@ -23,8 +23,12 @@ class CreateTableTasks extends Migration
             $table->integer('owner')->unsigned()
             ->comment = "task creator";
 
+            $table->foreign('project_id')->references('id')->on('projects')
+            ->onDelete('cascade');
+            $table->foreign('owner')->references('id')->on('users')
+            ->onDelete('cascade');
+
             $table->timestamps();
-            $table->softDeletes();
 
             $table->engine = "InnoDB";
         });
@@ -32,8 +36,6 @@ class CreateTableTasks extends Migration
         Schema::create('task_permissions', function (Blueprint $table) {
             $table->integer('task_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->enum('role', ['manager', 'watcher'])->default('watcher')
-            ->comment = "user is a task manager or task watcher";
 
             $table->foreign('task_id')->references('id')->on('tasks')
             ->onDelete('cascade');

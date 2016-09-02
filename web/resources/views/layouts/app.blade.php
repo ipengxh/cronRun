@@ -17,7 +17,7 @@
     <script src="/js/app.js"></script>
     <style>
         body {
-            font-family: 'Monaco', 'Courier New', 'Courier';
+            font-family: 'Source Code Pro', 'Monaco', 'Courier New', 'Courier';
             padding-top: 70px;
         }
     </style>
@@ -56,9 +56,7 @@
                     <li>
                 @endif
                         <a href="{{ url('/dashboard') }}">
-                            <i class="fa fa-dashboard info"></i>
-                            Dashboard
-                        </a>
+                            <i class="fa fa-dashboard info"></i> Dashboard</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
@@ -68,9 +66,7 @@
                     <li>
                 @endif
                         <a href="{{ url('/tasks') }}">
-                            <i class="fa fa-tasks"></i>
-                            Tasks
-                        </a>
+                            <i class="fa fa-tasks"></i> Tasks</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
@@ -80,9 +76,7 @@
                     <li>
                 @endif
                         <a href="{{ url('/projects') }}">
-                            <i class="fa fa-laptop"></i>
-                            Projects
-                        </a>
+                            <i class="fa fa-laptop"></i> Projects</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
@@ -92,9 +86,7 @@
                     <li>
                 @endif
                         <a href="{{ url('/nodes') }}">
-                            <i class="fa fa-cloud"></i>
-                            Nodes
-                        </a>
+                            <i class="fa fa-cloud"></i> Nodes</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
@@ -104,9 +96,7 @@
                     <li>
                 @endif
                         <a href="{{ url('/settings') }}">
-                            <i class="fa fa-cog"></i>
-                            Settings
-                        </a>
+                            <i class="fa fa-cog"></i> Settings</a>
                     </li>
                 </ul>
 
@@ -128,8 +118,8 @@
                             </a>
 
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="{{ url('/profile') }}"><i class="fa fa-btn fa-user"></i>My profile</a></li>
-                                <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
+                                <li><a href="{{ url('/profile') }}"><i class="fa fa-btn fa-user"></i> My profile</a></li>
+                                <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i> Logout</a></li>
                             </ul>
                         </li>
                     @endif
@@ -138,16 +128,39 @@
         </div>
     </nav>
     @if (count($errors))
-    <div class="alert alert-danger">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        <ul>
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+    @if (count(session('success')))
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <ul>
+                        @foreach (session('success') as $message)
+                        <li>{{ $message }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
     @endif
     @yield('content')
 </body>
+<script src="/js/hotkey.js"></script>
 @yield('footer')
 </html>

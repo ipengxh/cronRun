@@ -22,4 +22,14 @@ class Project extends Model
     {
         return $this->belongsTo(Node::class);
     }
+
+    public function scopeNode($query, $id)
+    {
+        return $query->whereNodeId($id);
+    }
+
+    public function scopeOwn($query)
+    {
+        return $query->whereOwner(\Auth::user()->id);
+    }
 }

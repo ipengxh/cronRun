@@ -23,8 +23,12 @@ class CreateTableProjects extends Migration
             $table->integer('owner')->unsigned()
             ->comment = "project creator";
 
+            $table->foreign('node_id')->references('id')->on('nodes')
+            ->onDelete('cascade');
+            $table->foreign('owner')->references('id')->on('users')
+            ->onDelete('cascade');
+
             $table->timestamps();
-            $table->softDeletes();
 
             $table->engine = "InnoDB";
         });
@@ -32,8 +36,6 @@ class CreateTableProjects extends Migration
         Schema::create('project_permissions', function (Blueprint $table) {
             $table->integer('project_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->enum('role', ['manager', 'watcher'])->default('watcher')
-            ->comment = "this user is a project manager or project watcher";
 
             $table->foreign('project_id')->references('id')->on('projects')
             ->onDelete('cascade');

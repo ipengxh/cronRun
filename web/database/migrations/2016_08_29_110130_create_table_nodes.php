@@ -29,8 +29,6 @@ class CreateTableNodes extends Migration
         Schema::create('node_permissions', function (Blueprint $table) {
             $table->integer('node_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->enum('role', ['manager', 'watcher'])->default('watcher')
-            ->comment = "this user is a node manager or node watcher";
 
             $table->foreign('node_id')->references('id')->on('nodes')
             ->onDelete('cascade');

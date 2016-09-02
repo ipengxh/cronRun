@@ -9,8 +9,7 @@ class NodePermission extends Model
     protected $table = 'node_permissions';
     protected $fillable = [
         'node_id',
-        'user_id',
-        'role'
+        'user_id'
     ];
 
     public $timestamps = null;
@@ -27,24 +26,11 @@ class NodePermission extends Model
 
     public function scopeOwn($query)
     {
-        return $query->with('user', 'node')
-        ->whereUserId(\Auth::user()->id)
-        ->get();
+        return $query->whereUserId(\Auth::user()->id);
     }
 
-    public function scopeManage($query)
+    public function scopePermission($query, $id)
     {
-        return $query->with('user', 'node')
-        ->whereUserId(\Auth::user()->id)
-        ->whereRole('manager')
-        ->get();
-    }
-
-    public function scopeWatch($query)
-    {
-        return $query->with('user', 'node')
-        ->whereUserId(\Auth::user()->id)
-        ->whereRole('watcher')
-        ->get();
+        return $query->whereUserId(\Auth::user()->id)->whereNodeId($id);
     }
 }

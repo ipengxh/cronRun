@@ -15,42 +15,37 @@ class NodeController extends Controller
 {
     public function index(Request $request)
     {
-        $nodes = NodePermission::own();
+        $nodes = Node::with('project', 'user')
+        ->own()->get();
         return view('node.index', compact('nodes'));
     }
 
-    public function register(Request $request)
+    public function edit($id)
     {
-        $user = User::whereEmail($request->email)->first();
-        if (!$user) {
-            return 'login failed, sign up an account? '.url('/register');
-        }
-        if (!\Hash::check($request->password, $user->password)) {
-            return 'Email or password incorrect.';
-        }
-        $node = Node::whereName($request->name)->first();
-        if (!$node) {
-            $newNode = [
+        $node = Node::findOrFail($id);
+        return view('node.edit', compact('node'));
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $new = [
                 'name'  => $request->name,
                 'key'   => md5(uniqid()),
                 'owner' => \Auth::user()->id
             ];
-            try {
-                DB::beginTransaction();
-                $node = Node::create($newNode);
-                $nodePermission = [
-                    'node_id' => $node->id,
-                    'user_id' => \Auth::user()->id,
-                    'role' => 'manager'
-                ];
-                NodePermission::create($nodePermission);
-                DB::commit();
-            } catch (\Exception $e) {
-                DB::rollback();
-                return response()->json($e->getMessage(), 422);
-            }
-
+            $node = Node::create($new);
+            $nodePermission = [
+                'node_id' => $node->id,
+                'user_id' => \Auth::user()->id,
+            ];
+            NodePermission::create($nodePermission);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->withErrors("Add node {$request->name} failed.");
         }
-        return response()->json($node->key);
+        return redirect(route('node:edit', $node->id))->with('success', ["Node {$request->name} added, fill below infornmation please."]);
     }
 }

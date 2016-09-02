@@ -10,17 +10,8 @@
 | to using a Closure or controller method. Build something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
-Route::get('/home', 'HomeController@index');
-
-
-Route::get('/node/register', 'NodeController@register');
 
 /**
  * Unauthed
@@ -33,16 +24,18 @@ Route::get('/', function () {
 Route::get('/dashboard', 'HomeController@index');
 
 
-
 Route::group(['middleware' => 'auth'], function () {
     Route::get('nodes', 'NodeController@index');
 
-    Route::group(['prefix' =>'Node'], function () {
+    Route::group(['prefix' =>'node'], function () {
         Route::get('show', 'NodeController@show');
 
-        Route::get('create', 'NodeController@create');
+        Route::post('store', 'NodeController@store');
 
-        Route::get('edit/{id}', 'NodeController@edit');
+        Route::get('edit/{id}', [
+                'as' => 'node:edit',
+                'uses' => 'NodeController@edit'
+            ]);
 
         Route::post('update/{id}', 'NodeController@update');
 
@@ -53,13 +46,21 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('projects', 'ProjectController@index');
 
     Route::group(['prefix' => 'project'], function () {
+        Route::get('node/{id}', [
+                'as' => 'node:projects',
+                'uses' => 'ProjectController@node'
+            ]);
+
         Route::get('show', 'ProjectController@show');
 
         Route::get('create', 'ProjectController@create');
 
         Route::post('store', 'ProjectController@store');
 
-        Route::get('edit/{id}', 'ProjectController@edit');
+        Route::get('edit/{id}', [
+                'as' => 'project:edit',
+                'uses' => 'ProjectController@edit'
+            ]);
 
         Route::post('update/{id}', 'ProjectController@update');
 
@@ -70,6 +71,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('tasks', 'TaskController@index');
 
     Route::group(['prefix' => 'task'], function () {
+        Route::get('project/{id}', [
+                'as' => 'project:tasks',
+                'uses' => 'TaskController@project'
+            ]);
         Route::get('show', 'TaskController@show');
 
         Route::get('create', 'TaskController@create');
@@ -88,3 +93,5 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('profile', 'SettingController@profile');
 });
 
+
+Route::get('/test', 'TestController@index');
