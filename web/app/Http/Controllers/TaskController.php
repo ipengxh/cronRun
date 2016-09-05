@@ -33,6 +33,13 @@ class TaskController extends Controller
         return view('task.index', compact('node', 'project', 'tasks'));
     }
 
+    public function project($id)
+    {
+        $project = Project::findOrFail($id);
+        $tasks = Task::own()->project($id)->get();
+        return view('task.index', compact('tasks', 'project'));
+    }
+
     public function store(StoreRequest $request)
     {
         try {
@@ -48,7 +55,7 @@ class TaskController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            return back()->withErrors("Add task {$request->name} failed");
+            return back()->withErrors("Add task {$request->name} failed: ".$e->getMessage());
         }
         return back();
     }

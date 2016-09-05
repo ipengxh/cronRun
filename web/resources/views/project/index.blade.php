@@ -46,7 +46,6 @@
                             <tr>
                                 <th>Project name</th>
                                 <th>Tasks</th>
-                                <th>Status</th>
                                 <th>Options</th>
                             </tr>
                         </thead>
@@ -55,29 +54,15 @@
                             <tr>
                                 <td>{{ $project->name }}</td>
                                 <td>
-                                    <a href="{{ route('project:tasks', $project->node_id) }}">
+                                    <a href="{{ route('project:tasks', $project->id) }}">
                                         {{ count($project->task) }}
                                     </a>
                                 </td>
                                 <td>
-                                    <span class="label label-default">dead</span>
-                                    <span class="label label-danger">disconnected</span>
-                                    <span class="label label-warning">reconnecting</span>
-                                    <span class="label label-success">connected</span>
-                                </td>
-                                <td>
                                     <a type="button" class="btn btn-info btn-xs">
-                                    <i class="fa fa-info"></i>
-                                    More info
+                                        <i class="fa fa-info"></i>
+                                        More info
                                     </a>
-                                    <a class="btn btn-primary btn-xs" href="{{ route('project:edit', $project->node_id) }}">
-                                    <i class="fa fa-edit"></i>
-                                    Edit
-                                    </a>
-                                    <button type="button" class="btn btn-danger btn-xs">
-                                    <i class="fa fa-remove"></i>
-                                    Remove
-                                    </button>
                                 </td>
                             </tr>
                             @endforeach

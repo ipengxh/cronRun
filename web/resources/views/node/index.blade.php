@@ -29,7 +29,8 @@
                             <tr>
                                 <th>Node name</th>
                                 <th>Projects</th>
-                                <th>Last active at</th>
+                                <th>Latest active at</th>
+                                <th>Status</th>
                                 <th>Options</th>
                             </tr>
                         </thead>
@@ -46,18 +47,16 @@
                                     {{ Redis::get('node:last_active:time:'.$node->id) ?? 'Never actived' }}
                                 </td>
                                 <td>
+                                    <span class="label label-default">dead</span>
+                                    <span class="label label-danger">disconnected</span>
+                                    <span class="label label-warning">reconnecting</span>
+                                    <span class="label label-success">connected</span>
+                                </td>
+                                <td>
                                     <a type="button" class="btn btn-info btn-xs">
-                                    <i class="fa fa-info"></i>
-                                    More info
+                                        <i class="fa fa-info"></i>
+                                        More
                                     </a>
-                                    <a class="btn btn-primary btn-xs" href="{{ route('node:edit', $node->id) }}">
-                                    <i class="fa fa-edit"></i>
-                                    Edit
-                                    </a>
-                                    <button type="button" class="btn btn-danger btn-xs">
-                                    <i class="fa fa-remove"></i>
-                                    Remove
-                                    </button>
                                 </td>
                             </tr>
                             @endforeach

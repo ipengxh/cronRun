@@ -37,9 +37,15 @@ Route::group(['middleware' => 'auth'], function () {
                 'uses' => 'NodeController@edit'
             ]);
 
-        Route::post('update/{id}', 'NodeController@update');
+        Route::post('update/{id}', [
+                'as' => 'node:update',
+                'uses' => 'NodeController@update'
+            ]);
 
-        Route::post('destroy/{id}', 'NodeController@destroy');
+        Route::post('destroy/{id}', [
+                'as' => 'node:destroy',
+                'uses' => 'NodeController@destroy'
+            ]);
     });
 
 
@@ -81,7 +87,10 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::post('store', 'TaskController@store');
 
-        Route::get('edit/{id}', 'TaskController@edit');
+        Route::get('edit/{id}', [
+                'as' => 'task:edit',
+                'task:edit' => 'TaskController@edit'
+            ]);
 
         Route::post('update/{id}', 'TaskController@update');
 

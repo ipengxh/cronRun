@@ -23,7 +23,7 @@
     </style>
     <!-- Scripts -->
     <script>
-        window.Laravel = <?php echo json_encode([
+        window.CSRF = <?php echo json_encode([
             'csrfToken' => csrf_token(),
         ]); ?>
     </script>
