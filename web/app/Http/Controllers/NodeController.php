@@ -26,11 +26,6 @@ class NodeController extends Controller
         return view('node.edit', compact('node'));
     }
 
-    public function update($id)
-    {
-        return redirect('/nodes');
-    }
-
     public function store(Request $request)
     {
         try {
