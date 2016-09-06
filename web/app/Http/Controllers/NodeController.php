@@ -8,7 +8,9 @@ use App\Http\Requests;
 
 use App\Models\Node,
 App\Models\NodePermission,
-App\Models\User;
+App\Models\Project,
+App\Models\User,
+App\Models\BinPath;
 
 use DB;
 
@@ -24,10 +26,32 @@ class NodeController extends Controller
         return view('node.index', compact('nodes'));
     }
 
+    public function create()
+    {
+        $binPaths = BinPath::groupBy('path')->get();
+        return view('node.create', compact('binPaths'));
+    }
+
     public function edit($id)
     {
-        $node = Node::findOrFail($id);
-        return view('node.edit', compact('node'));
+        $node = Node::whereOwner(\Auth::user()->id)->findOrFail($id);
+        $myNodes = Node::own()->where('id', '!=', $id)->get();
+        $binPaths = BinPath::whereIn('node_id', array_column($myNodes->toArray(), 'id'))
+        ->get();
+        $thisNodeBinPaths = BinPath::whereNodeId($id)->get();
+        $users = User::all();
+        $managers = NodePermission::with('user')->whereNodeId($id)->get();
+        return view('node.edit', compact('node', 'binPaths', 'thisNodeBinPaths', 'users', 'managers'));
+    }
+
+    public function show($id)
+    {
+        $node = Node::with('user')->whereOwner(\Auth::user()->id)->findOrFail($id);
+        $thisNodeBinPaths = BinPath::whereNodeId($id)->get();
+        $managers = NodePermission::with('user')->whereNodeId($id)->get();
+        $projects = Project::whereNodeId($id)->get();
+        $binPaths = BinPath::whereNodeId($id)->get();
+        return view('node.show', compact('node', 'thisNodeBinPaths', 'managers', 'projects', 'binPaths'));
     }
 
     public function update($id, UpdateRequest $request)
@@ -73,6 +97,6 @@ class NodeController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors("Could not delete node: ".$e->getMessage());
         }
-        return back()->with('success', ["Node {$node->name} has been removed."]);
+        return redirect('/nodes')->with('success', ["Node {$node->name} has been removed."]);
     }
 }

@@ -37,7 +37,11 @@
                         <tbody>
                             @foreach ($nodes as $node)
                             <tr>
-                                <td>{{ $node->name }}</td>
+                                <td>
+                                    <a href="{{ route('node:show', $node->id) }}">
+                                        {{ $node->name }}
+                                    </a>
+                                </td>
                                 <td>
                                     <a href="{{ route('node:projects', $node->id) }}">
                                         {{ count($node->project) }}
@@ -53,9 +57,8 @@
                                     <span class="label label-success">connected</span>
                                 </td>
                                 <td>
-                                    <a type="button" class="btn btn-info btn-xs">
-                                        <i class="fa fa-info"></i>
-                                        More
+                                    <a href="{{ route('node:show', $node->id) }}">
+                                        Details
                                     </a>
                                 </td>
                             </tr>

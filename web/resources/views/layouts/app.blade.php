@@ -12,9 +12,12 @@
 
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/select2/select2-bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/select2/select2.min.css">
     <link rel="stylesheet" href="/css/font-awesome/4.6.3/css/font-awesome.min.css">
     <!-- Scripts -->
     <script src="/js/app.js"></script>
+    <script src="/js/select2/select2.min.js"></script>
     <style>
         body {
             font-family: 'Source Code Pro', 'Monaco', 'Courier New', 'Courier';

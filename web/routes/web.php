@@ -23,16 +23,18 @@ Route::get('/', function () {
 
 Route::get('/dashboard', 'HomeController@index');
 
-
 Route::group(['middleware' => 'auth'], function () {
     Route::get('nodes', 'NodeController@index');
 
     Route::group(['prefix' =>'node'], function () {
-        Route::get('show', 'NodeController@show');
+        Route::get('{id}/details', [
+                'as' => 'node:show',
+                'uses' => 'NodeController@show'
+            ]);
 
         Route::post('store', 'NodeController@store');
 
-        Route::get('edit/{id}', [
+        Route::get('{id}/edit', [
                 'as' => 'node:edit',
                 'uses' => 'NodeController@edit'
             ]);
