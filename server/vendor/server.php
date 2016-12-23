@@ -1,13 +1,13 @@
 <?php
 
 /**
-* @author Bruce Peng <ipengxh@ipengxh.com>
-*/
+ * @author Bruce Peng <ipengxh@ipengxh.com>
+ */
 class Server
 {
     protected $server;
 
-    function __construct($config, $swoole)
+    public function __construct($config, $swoole)
     {
         $this->config = $config;
         $this->swoole = $swoole;
@@ -17,16 +17,16 @@ class Server
     private function config()
     {
         $this->server->set($this->swoole);
-        $this->server->on('connect', function ($server, $fd){
+        $this->server->on('connect', function ($server, $fd) {
             echo "Client {$fd} Connect.\n";
             $server->send($fd, 'You\'ve connected');
         });
         $this->server->on('receive', function ($server, $fd, $from_id, $data) {
-            echo "Client {$fd} send a message \"{$data}\", from id: {$from_id}\n";
-            $server->send($fd, 'Swoole has received your message: '.$data);
+            echo "Client {$fd} send a message, from id: {$from_id}\n";
+            print_r(json_decode($data));
+            $server->send($fd, 'Swoole has received your message: ' . $data);
         });
         $this->server->on('close', function ($server, $fd) {
-            var_dump($server->heartbeat());
             echo "Client {$fd}: Close.\n";
         });
     }

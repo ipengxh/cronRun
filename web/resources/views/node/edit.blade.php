@@ -9,6 +9,7 @@
                 </div>
                 <div class="panel-body">
                     <form action="{{ route('node:update', $node->id) }}" method="POST" class="form-horizontal" role="form">
+                        {{ csrf_field() }}
                         <div class="form-group form-group-sm">
                             <label class="control-label col-sm-2" for="name">Node name:</label>
                             <div class="col-sm-8">

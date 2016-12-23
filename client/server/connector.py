@@ -4,7 +4,7 @@ class connector(object):
         self.config = config
 
     def connect(self):
-        raise ConnectorException('Could not connect to server, start to run a self hosting cron run client.')
+        raise ConnectorException('Could not connect to server.')
 
 class ConnectorException(Exception):
     """docstring for ConnectorException"""

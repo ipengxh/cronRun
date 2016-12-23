@@ -2,20 +2,16 @@
 
 @section('content')
 <div class="container">
-    <div class="content">
-        <div class="title">
-            <p>@{{ message }}</p>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Welcome</div>
+
+                <div class="panel-body">
+                    Your Application's Landing Page.
+                </div>
+            </div>
         </div>
     </div>
 </div>
-@endsection
-@section('footer')
-<script type="text/javascript">
-     new Vue({
-        el: '.title',
-        data: {
-            message: 'Hello Laravel!'
-        }
-    })
-</script>
 @endsection

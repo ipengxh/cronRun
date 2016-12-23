@@ -57,9 +57,12 @@ class NodeController extends Controller
     public function update($id, UpdateRequest $request)
     {
         try {
+            Node::where(['id' => $id])->update(['name' => $request->name]);exit;
+            //Node::updateOrCreate(['id' => $id], ['name' => $request->name]);exit;
             $node = Node::findOrFail($id);
-            $node->name = trim($request->name);
-            $node->save();
+            $node->update(['name' => $request->name]);
+            //$node->name = trim($request->name);
+            //$node->save();
         } catch (\Exception $e) {
             return redirect('/nodes')->withErrors("Update node failed: ");
         }

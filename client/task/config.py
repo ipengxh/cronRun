@@ -12,6 +12,7 @@ class local(threading.Thread):
     """docstring for Local"""
     def __init__(self, configFile):
         self.configFile = configFile
+        print self.configFile
 
     def watch(self):
         WatchManager = pyinotify.WatchManager()

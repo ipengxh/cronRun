@@ -14,7 +14,6 @@ class scan():
         for (dirPath, dirNames, fileNames) in walk(self.configPath):
             #print dirPath
             for fileName in fileNames:
-                #files.append(dirPath + '/' + fileName)
                 files.extend([dirPath + '/' + fileName])
         return files
 
@@ -32,6 +31,7 @@ class schedule(threading.Thread):
     '''watch config file'''
     def watch(self):
         conf = config.schedule(self.configFile)
+        setproctitle.setproctitle("cronrun: config monitor " + self.configFile)
         conf.watch()
 
     '''schedule manager'''
@@ -94,7 +94,8 @@ class schedule(threading.Thread):
 
     # execute the task
     def execute(self):
-        subProgress = subprocess.Popen(self.config.get('app', 'command'), shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+        command = self.config.get('app', 'command') + " " + self.config.get('app', 'param')
+        subProgress = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
 
     # get next running time
     def next_time(self, timer):

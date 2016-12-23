@@ -9,7 +9,6 @@ return [
     'log_level' => 0,
     'open_tcp_keepalive' => 1,
     'heartbeat_check_interval' => 3,
-    'heartbeat_idle_time' => 5,
     'user' => 'www-data',
     'group' => 'www-data',
 ];

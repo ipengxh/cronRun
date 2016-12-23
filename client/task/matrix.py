@@ -1,13 +1,14 @@
 from server import *
 import config
 import schedule
-import threading, time, sys
+import threading, time, sys, os
 
 class matrix():
     """docstring for CronRun"""
     def __init__(self, ConfigFile):
         # init server connector
         self.connector = connector.connector(ConfigFile)
+        self.ConfigFile = ConfigFile
 
     """boot the cronRun"""
     def start(self):
@@ -39,7 +40,7 @@ class matrix():
         # boot self hosting config watcher
         self.bootHost()
         # boot tasks
-        scheduleConfigPath = 'schedules'
+        scheduleConfigPath = os.path.dirname(self.ConfigFile) + '/schedules'
         scheduleConfigFiles = schedule.scan(scheduleConfigPath)
         self.newSchedule(scheduleConfigPath)
         for scheduleConfigFile in scheduleConfigFiles.all():
@@ -49,7 +50,7 @@ class matrix():
         print 'all tasks are booted.'
 
     def bootHost(self):
-        host = config.local('config.ini')
+        host = config.local(self.ConfigFile)
         threading.Thread(target = host.watch).start()
 
     def newSchedule(self, dirName):

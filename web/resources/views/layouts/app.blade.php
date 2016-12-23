@@ -27,8 +27,8 @@
     <!-- Scripts -->
     <script>
         window.CSRF = <?php echo json_encode([
-            'csrfToken' => csrf_token(),
-        ]); ?>
+    'csrfToken' => csrf_token(),
+]); ?>
     </script>
 </head>
 <body>
@@ -89,7 +89,7 @@
                     <li>
                 @endif
                         <a href="{{ url('/nodes') }}">
-                            <i class="fa fa-cloud"></i> Nodes</a>
+                            <i class="fa fa-server"></i> Nodes</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav">
