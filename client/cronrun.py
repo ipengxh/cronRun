@@ -3,21 +3,26 @@
 
 from task import *
 from server import *
-import sys, os, textwrap
+import sys, os, textwrap, subprocess, setproctitle, time
+from socket import error as socket_error
 
-ConfigFile = os.path.dirname(os.path.abspath(__file__)) + '/cronrun.ini'
+base_path = os.path.dirname(os.path.abspath(__file__))
+config_file = os.path.dirname(os.path.abspath(__file__)) + '/cronrun.ini'
 
 def connect():
-    print 'Try to connect to server...'
     try:
-        connection = connector.connector(ConfigFile)
+        connection = connector.Connector(config_file)
         connection.connect()
+        connection.register()
+        connection.listen()
     except connector.ConnectorException, e:
-        print e.message
+        print "Error: " + e.message
+    except socket_error, e:
+        print "Server is down"
 
 def scan():
     print 'scan for schedules'
-    schedules = schedule.scan('schedules')
+    schedules = schedule.scan(base_path + '/schedules')
     for task in schedules.all():
         print task
 
@@ -44,7 +49,23 @@ def daemon():
     return pid
 
 def start():
-    cron = matrix.matrix(ConfigFile)
+    #daemon()
+    setproctitle.setproctitle('cronRun master')
+    connect()
+    schedules = schedule.scan('%s/schedules' % (base_path))
+    for task in schedules.all():
+        if os.fork() <= 0:
+            setproctitle.setproctitle("cronRun worker: %s" % task)
+            print task
+            while True:
+                time.sleep(1)
+            #subProgress = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+    while True:
+        time.sleep(1)
+    sys.exit()
+    cron = matrix.matrix(config_file)
+    print cron
+    sys.exit()
     cron.start()
 
 def main():
@@ -57,12 +78,7 @@ def main():
             scan()
             return
         elif 'start' == sys.argv[1]:
-            print setproctitle.getproctitle()
-            #if is_running() is not None:
-            #    print "cronRun is running, pid: ", is_running()
-            #    return
-            daemon_pid = daemon()
-            print 'daemon booted, start to run'
+            #daemon()
             start()
             return
         elif 'restart' == sys.argv[1]:

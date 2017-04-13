@@ -1,0 +1,107 @@
+#!/usr/bin/python
+import os, sys
+from ConfigParser import *
+from server import *
+from socket import error as socket_error
+
+base_path = os.path.dirname(os.path.abspath(__file__))
+config_file = os.path.dirname(os.path.abspath(__file__)) + '/cronrun.ini'
+
+class CronRunClient():
+    """docstring for CronRunClient"""
+    def __init__(self, config_file):
+        self.config_file = config_file
+        self.config = ConfigParser()
+        self.config.read(config_file)
+
+    """try to connect to server if server is enabled"""
+    def connect(self):
+        server = connector.Connector(self.config)
+        try:
+            server.test()
+        except connector.ConnectorException, e:
+            print e.message
+        except socket_error as e:
+            print "Could not connect to server %s at port %s" %server.address()
+        except Exception as e:
+            print "Unkown error caused: %s" %e.message
+        else:
+            print "Connect to server %s at port %s success" %server.address()
+        finally:
+            pass
+        return True
+
+    """scan all schedules"""
+    def scan(self):
+        return True
+
+    """check cronrun status"""
+    def status(self):
+        return True
+
+    """boot cronrun"""
+    def start(self):
+        if self.is_running():
+            print "cronrun is running at pid: %s" %self.get_current_pid()
+            sys.exit()
+        return True
+
+    """reboot cronrun"""
+    def restart(self):
+        return True
+
+    """stop cronrun"""
+    def stop(self):
+        return True
+
+    """check if cronrun is running"""
+    def is_running(self):
+        return True
+
+    def get_pid_file_path(self):
+        return self.config.read('cronrun', 'pid')
+
+    def get_current_pid(self):
+        return os.getpid()
+
+def main():
+    try:
+        sys.argv[1]
+        cron_run_client = CronRunClient(config_file)
+        if 'connect' == sys.argv[1]:
+            cron_run_client.connect()
+            return
+        elif 'scan' == sys.argv[1]:
+            #scan()
+            return
+        elif 'status' == sys.argv[1]:
+            cron_run_client.status()
+            return
+        elif 'start' == sys.argv[1]:
+            #daemon()
+            cron_run_client.start()
+            return
+        elif 'restart' == sys.argv[1]:
+            print 'scan for schedules'
+            schedules = schedule.scan('schedules')
+            for task in schedules.all():
+                print task
+            return
+        elif 'stop' == sys.argv[1]:
+            if is_running() is None:
+                print "cronRun is not running"
+                return
+
+            return
+
+    except IndexError, e:
+        pass
+        #cron.start()
+    except Exception, e:
+        print e
+    else:
+        print 'Invalid option', sys.argv[1]
+        sys.exit()
+
+if '__main__' == __name__:
+    main();

@@ -8,8 +8,8 @@ if ('cli' !== php_sapi_name()) {
     echo "You should run this script on cli mode.";die(-1);
 }
 
-if (PHP_VERSION_ID < 50600) {
-    echo "This script needs php for higher than php 5.6.";die(-1);
+if (PHP_VERSION_ID < 70000) {
+    echo "This script needs php for php 7.0 or higher.";die(-1);
 }
 
 /**
@@ -23,17 +23,17 @@ if (!extension_loaded('swoole')) {
 
 define('BASE_PATH', dirname(__FILE__));
 
-$configPath = BASE_PATH.'/config/';
-$vendorPath = BASE_PATH.'/vendor/';
+$configPath = BASE_PATH . '/config/';
+$vendorPath = BASE_PATH . '/vendor/';
 
-if (!file_exists($configPath.'config.php')) {
+if (!file_exists($configPath . 'config.php')) {
     echo "Config file not found.";die(-1);
 }
 
-$config = require($configPath.'config.php');
-$swooleConfig = require($configPath.'swoole.php');
+$config = require $configPath . 'config.php';
+$swooleConfig = require $configPath . 'swoole.php';
 
-require($vendorPath.'server.php');
+require $vendorPath . 'server.php';
 
 $server = new Server($config, $swooleConfig);
 $server->run();

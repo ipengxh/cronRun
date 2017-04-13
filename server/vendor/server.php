@@ -19,21 +19,36 @@ class Server
         $this->server->set($this->swoole);
         $this->server->on('connect', function ($server, $fd) {
             echo "Client {$fd} Connect.\n";
-            $server->send($fd, 'You\'ve connected');
+            $server->send($fd, 'connected');
         });
         $this->server->on('receive', function ($server, $fd, $from_id, $data) {
-            echo "Client {$fd} send a message, from id: {$from_id}\n";
-            print_r(json_decode($data));
-            $server->send($fd, 'Swoole has received your message: ' . $data);
+            $key = "7941ed0ba1e74b920beaee3d40de909a";
+            $message = json_decode(trim($this->decode($data, $key)));
+            if (in_array($message->action, ['register', 'test', 'projectAdd', 'projectUpdate', 'projectDelete', 'taskAdd', 'taskUpdate', 'taskDelete'])) {
+                $this->{$message->action}($server, $fd, $message);
+            }
+            echo "Client({$fd}) is doing {$message->action} with a message: {$message->message}, from id: {$from_id}\n";
+            $server->send($fd, 'Swoole has received your message: ' . $message->message);
         });
         $this->server->on('close', function ($server, $fd) {
             echo "Client {$fd}: Close.\n";
         });
     }
 
+    private function register($server, $fd, $data)
+    {
+        $server->send($fd, file_get_contents('docs/API.md'));
+    }
+
     private function init()
     {
         $this->server = new swoole_server($this->config['listen'], $this->config['listen_port']);
+    }
+
+    private function decode($message, $password)
+    {
+        $iv = substr($password, 0, 16);
+        return openssl_decrypt($message, 'aes-256-cbc', $password, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
     }
 
     public function run()

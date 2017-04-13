@@ -5,10 +5,10 @@ import threading, time, sys, os
 
 class matrix():
     """docstring for CronRun"""
-    def __init__(self, ConfigFile):
+    def __init__(self, config_file):
         # init server connector
-        self.connector = connector.connector(ConfigFile)
-        self.ConfigFile = ConfigFile
+        self.connector = connector.connector(config_file)
+        self.config_file = config_file
 
     """boot the cronRun"""
     def start(self):
@@ -40,29 +40,29 @@ class matrix():
         # boot self hosting config watcher
         self.bootHost()
         # boot tasks
-        scheduleConfigPath = os.path.dirname(self.ConfigFile) + '/schedules'
-        scheduleConfigFiles = schedule.scan(scheduleConfigPath)
-        self.newSchedule(scheduleConfigPath)
-        for scheduleConfigFile in scheduleConfigFiles.all():
-            print 'trying load task', scheduleConfigFile
-            taskThread = self.bootSchedule(scheduleConfigFile)
-            self.bootMonitor(scheduleConfigFile, taskThread)
+        schedule_config_path = os.path.dirname(self.config_file) + '/schedules'
+        schedule_config_files = schedule.scan(schedule_config_path)
+        self.newSchedule(schedule_config_path)
+        for schedule_config_file in schedule_config_files.all():
+            print 'trying load task', schedule_config_file
+            taskThread = self.bootSchedule(schedule_config_file)
+            self.bootMonitor(schedule_config_file, taskThread)
         print 'all tasks are booted.'
 
     def bootHost(self):
-        host = config.local(self.ConfigFile)
+        host = config.local(self.config_file)
         threading.Thread(target = host.watch).start()
 
     def newSchedule(self, dirName):
         threading.Thread(target = config.new, args = (dirName,)).start()
 
-    def bootSchedule(self, scheduleConfigFile):
-        taskThread = schedule.schedule(scheduleConfigFile)
+    def bootSchedule(self, schedule_config_file):
+        taskThread = schedule.schedule(schedule_config_file)
         taskThread.start()
-        print scheduleConfigFile, 'booted'
+        print schedule_config_file, 'booted'
         return taskThread
 
-    def bootMonitor(self, scheduleConfigFile, taskThread):
-        monitor = config.scheduleMonitor(scheduleConfigFile, taskThread)
+    def bootMonitor(self, schedule_config_file, taskThread):
+        monitor = config.scheduleMonitor(schedule_config_file, taskThread)
         monitor.start()
-        print 'start to monitoring', scheduleConfigFile
+        print 'start to monitoring', schedule_config_file

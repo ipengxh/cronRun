@@ -3,6 +3,7 @@ from os import listdir, walk
 from os.path import isfile
 import time, threading, sys, Queue, subprocess
 from ConfigParser import ConfigParser
+import setproctitle
 
 class scan():
     """docstring for scan"""
@@ -17,6 +18,10 @@ class scan():
                 files.extend([dirPath + '/' + fileName])
         return files
 
+    def new_thread(self):
+        for task in self.all():
+            print task
+
 class schedule(threading.Thread):
     """docstring for boot"""
     def __init__(self, configFile):
@@ -30,8 +35,8 @@ class schedule(threading.Thread):
 
     '''watch config file'''
     def watch(self):
-        conf = config.schedule(self.configFile)
         setproctitle.setproctitle("cronrun: config monitor " + self.configFile)
+        conf = config.schedule(self.configFile)
         conf.watch()
 
     '''schedule manager'''
