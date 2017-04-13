@@ -37,6 +37,7 @@ class TestCommand extends Command
      */
     public function handle()
     {
+        //\Mail::send('');
         $server = app(\App\Services\Server::class);
         $task = \App\Models\Task::with('project', 'project.node')->first();
         $server->addTask($task);

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableNodes extends Migration
+class CreateProjects extends Migration
 {
     /**
      * Run the migrations.
@@ -12,30 +12,37 @@ class CreateTableNodes extends Migration
      */
     public function up()
     {
-        Schema::create('nodes', function (Blueprint $table) {
+        Schema::create('projects', function (Blueprint $table) {
             $table->increments('id');
 
             $table->string('name');
             $table->string('key');
+            $table->integer('node_id')->unsigned()
+            ->comment = "belongs to node";
 
             $table->integer('owner')->unsigned()
-            ->comment = "the user id of node creator";
+            ->comment = "project creator";
+
+            $table->foreign('node_id')->references('id')->on('nodes')
+            ->onDelete('cascade');
+            $table->foreign('owner')->references('id')->on('users')
+            ->onDelete('cascade');
 
             $table->timestamps();
 
             $table->engine = "InnoDB";
         });
 
-        Schema::create('node_permissions', function (Blueprint $table) {
-            $table->integer('node_id')->unsigned();
+        Schema::create('project_permissions', function (Blueprint $table) {
+            $table->integer('project_id')->unsigned();
             $table->integer('user_id')->unsigned();
 
-            $table->foreign('node_id')->references('id')->on('nodes')
+            $table->foreign('project_id')->references('id')->on('projects')
             ->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')
             ->onDelete('cascade');
 
-            $table->unique(['node_id', 'user_id']);
+            $table->unique(['project_id', 'user_id']);
 
             $table->engine = "InnoDB";
         });
@@ -48,7 +55,7 @@ class CreateTableNodes extends Migration
      */
     public function down()
     {
-        Schema::drop('node_permissions');
-        Schema::drop('nodes');
+        Schema::drop('project_permissions');
+        Schema::drop('projects');
     }
 }

@@ -18,9 +18,9 @@ class Controller extends BaseController
             $supportedLangs = ['en', 'zh'];
             $browserLang = substr(\Request::server('HTTP_ACCEPT_LANGUAGE'), 0, 2);
             if (!in_array($browserLang, $supportedLangs)) {
-                \Session::set('locale', config('app.locale'));
+                \Session::put('locale', config('app.locale'));
             } else {
-                \Session::set('locale', $browserLang);
+                \Session::put('locale', $browserLang);
             }
         }
         \App::setlocale(\Session::get('locale'));

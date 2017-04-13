@@ -58,17 +58,6 @@
                                     @endforeach
                                 </td>
                             </tr>
-                            <tr>
-                                <td>Bin paths</td>
-                                <td>
-                                    @foreach ($binPaths as $binPath)
-                                        <span class="label label-info">{{ $binPath->name }}</span>
-                                        -
-                                        {{ $binPath->path }}
-                                        <br>
-                                    @endforeach
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>

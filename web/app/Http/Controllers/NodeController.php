@@ -2,56 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-
-use App\Models\Node,
-App\Models\NodePermission,
-App\Models\Project,
-App\Models\User,
-App\Models\BinPath;
-
+use App\Http\Requests\Node\StoreRequest;
+use App\Http\Requests\Node\UpdateRequest;
+use App\Models\Node;
+use App\Models\NodePermission;
+use App\Models\Project;
+use App\Models\User;
 use DB;
-
-use App\Http\Requests\Node\StoreRequest,
-App\Http\Requests\Node\UpdateRequest;
+use Illuminate\Http\Request;
 
 class NodeController extends Controller
 {
     public function index(Request $request)
     {
         $nodes = Node::with('project', 'user')
-        ->own()->get();
+            ->own()->get();
         return view('node.index', compact('nodes'));
     }
 
     public function create()
     {
-        $binPaths = BinPath::groupBy('path')->get();
-        return view('node.create', compact('binPaths'));
+        return view('node.create');
     }
 
     public function edit($id)
     {
         $node = Node::whereOwner(\Auth::user()->id)->findOrFail($id);
         $myNodes = Node::own()->where('id', '!=', $id)->get();
-        $binPaths = BinPath::whereIn('node_id', array_column($myNodes->toArray(), 'id'))
-        ->get();
-        $thisNodeBinPaths = BinPath::whereNodeId($id)->get();
         $users = User::all();
         $managers = NodePermission::with('user')->whereNodeId($id)->get();
-        return view('node.edit', compact('node', 'binPaths', 'thisNodeBinPaths', 'users', 'managers'));
+        return view('node.edit', compact('node', 'users', 'managers'));
     }
 
     public function show($id)
     {
         $node = Node::with('user')->whereOwner(\Auth::user()->id)->findOrFail($id);
-        $thisNodeBinPaths = BinPath::whereNodeId($id)->get();
         $managers = NodePermission::with('user')->whereNodeId($id)->get();
         $projects = Project::whereNodeId($id)->get();
-        $binPaths = BinPath::whereNodeId($id)->get();
-        return view('node.show', compact('node', 'thisNodeBinPaths', 'managers', 'projects', 'binPaths'));
+        return view('node.show', compact('node', 'managers', 'projects'));
     }
 
     public function update($id, UpdateRequest $request)
@@ -74,9 +62,9 @@ class NodeController extends Controller
         try {
             DB::beginTransaction();
             $new = [
-                'name'  => $request->name,
-                'key'   => md5(uniqid()),
-                'owner' => \Auth::user()->id
+                'name' => $request->name,
+                'key' => md5(uniqid()),
+                'owner' => \Auth::user()->id,
             ];
             $node = Node::create($new);
             $nodePermission = [
@@ -98,7 +86,7 @@ class NodeController extends Controller
             $node = Node::find($id);
             Node::destroy($id);
         } catch (\Exception $e) {
-            return back()->withErrors("Could not delete node: ".$e->getMessage());
+            return back()->withErrors("Could not delete node: " . $e->getMessage());
         }
         return redirect('/nodes')->with('success', ["Node {$node->name} has been removed."]);
     }

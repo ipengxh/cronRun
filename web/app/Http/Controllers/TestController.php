@@ -10,6 +10,7 @@ class TestController extends Controller
 {
     public function index()
     {
+        return \App::version();
         $sheets = [
             ['ID', 'test'],
             [1, 'A'],
