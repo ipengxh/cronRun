@@ -14,10 +14,12 @@ def connect():
         connection = connector.Connector(config_file)
         connection.connect()
         connection.register()
+        #connection.heart_beat()
         connection.listen()
     except connector.ConnectorException, e:
         print "Error: " + e.message
     except socket_error, e:
+        print e
         print "Server is down"
 
 def scan():
@@ -40,8 +42,8 @@ def daemon():
         sys.exit()
 
     si = file("/dev/null", 'r')
-    so = file("/dev/null",'a+')
-    se = file("/dev/null",'a+',0)
+    so = file("/dev/null", 'a+')
+    se = file("/dev/null", 'a+', 0)
     os.dup2(si.fileno(), sys.stdin.fileno())
     os.dup2(so.fileno(), sys.stdout.fileno())
     os.dup2(se.fileno(), sys.stderr.fileno())

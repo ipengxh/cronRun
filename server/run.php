@@ -21,7 +21,9 @@ if (!extension_loaded('swoole')) {
     echo "Extension swoole is required, but it's not loaded now.";die(-1);
 }
 
-define('BASE_PATH', dirname(__FILE__));
+define('BASE_PATH', __DIR__ . '/');
+
+require BASE_PATH . 'bootstrap/autoload.php';
 
 $configPath = BASE_PATH . '/config/';
 $vendorPath = BASE_PATH . '/vendor/';
@@ -33,7 +35,13 @@ if (!file_exists($configPath . 'config.php')) {
 $config = require $configPath . 'config.php';
 $swooleConfig = require $configPath . 'swoole.php';
 
-require $vendorPath . 'server.php';
-
-$server = new Server($config, $swooleConfig);
-$server->run();
+$apiConfig = require $configPath . 'api.php';
+$api = new \CronRun\Api($apiConfig, $swooleConfig);
+$apiProcess = new swoole_process([$api, 'run']);
+$apiProcess->name("cronrun api");
+$apiProcess->start();
+sleep(1);
+$server = new \CronRun\Server($config, $swooleConfig);
+$serverProcess = new swoole_process([$server, 'run']);
+$serverProcess->name('cronrun server');
+$serverProcess->start();

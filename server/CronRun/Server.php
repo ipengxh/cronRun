@@ -1,4 +1,7 @@
 <?php
+namespace CronRun;
+
+use swoole_server;
 
 /**
  * @author Bruce Peng <ipengxh@ipengxh.com>
@@ -6,6 +9,17 @@
 class Server
 {
     protected $server;
+
+    protected $access = [
+        'register', // register
+        'test', // connection test
+        'add', // client create a new task
+        'update', // client update an exists task
+        'delete', // client delete a task
+        'beat', // heart beat
+        'log', // send task log to server
+        'bye',
+    ];
 
     public function __construct($config, $swoole)
     {
@@ -22,13 +36,14 @@ class Server
             $server->send($fd, 'connected');
         });
         $this->server->on('receive', function ($server, $fd, $from_id, $data) {
-            $key = "7941ed0ba1e74b920beaee3d40de909a";
+            $key = "6b6e7abf3a2b0b260a5afea196503b72";
+            $token = substr($data, 0, 32);
+            $data = substr($data, 32);
             $message = json_decode(trim($this->decode($data, $key)));
-            if (in_array($message->action, ['register', 'test', 'projectAdd', 'projectUpdate', 'projectDelete', 'taskAdd', 'taskUpdate', 'taskDelete'])) {
+            if (in_array($message->action, $this->access)) {
                 $this->{$message->action}($server, $fd, $message);
             }
             echo "Client({$fd}) is doing {$message->action} with a message: {$message->message}, from id: {$from_id}\n";
-            $server->send($fd, 'Swoole has received your message: ' . $message->message);
         });
         $this->server->on('close', function ($server, $fd) {
             echo "Client {$fd}: Close.\n";
@@ -37,7 +52,16 @@ class Server
 
     private function register($server, $fd, $data)
     {
-        $server->send($fd, file_get_contents('docs/API.md'));
+        $key = "6b6e7abf3a2b0b260a5afea196503b72";
+        $content = $this->encode(file_get_contents('/mnt/workspace/cronRun/server/docs/API.md'), $key);
+        // max message length is 4GBytes, should be enough...
+        $message = '0x' . str_pad(dechex(strlen($content)), 8, '0', STR_PAD_LEFT) . $content;
+        $server->send($fd, $message);
+    }
+
+    private function beat($server, $fd, $data)
+    {
+        return;
     }
 
     private function init()
@@ -49,6 +73,12 @@ class Server
     {
         $iv = substr($password, 0, 16);
         return openssl_decrypt($message, 'aes-256-cbc', $password, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
+    }
+
+    private function encode($message, $password)
+    {
+        $iv = substr($password, 0, 16);
+        return openssl_encrypt($message, 'aes-256-cbc', $password, true, $iv);
     }
 
     public function run()

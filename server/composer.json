@@ -1,0 +1,18 @@
+{
+    "name": "cronrun/server",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Bruce Peng",
+            "email": "ipengxh@ipengxh.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "classmap": [
+        ],
+        "psr-4": {
+            "CronRun\\": "CronRun/"
+        }
+    }
+}

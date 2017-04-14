@@ -2,3 +2,5 @@ sftp-config.json
 *.pyc
 *.lock
 .DS_Store
+.env
+.phpintel/*
