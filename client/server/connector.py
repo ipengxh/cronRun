@@ -38,7 +38,7 @@ class Connector():
             chunk = self.connection.recv(512)
             chunks.append(chunk)
             message_length = message_length - 512
-        message = self.decrypt(b''.join(chunks))
+        message = b''.join(chunks)
         print message
 
     def heart_beat(self):
@@ -65,18 +65,8 @@ class Connector():
     def close(self):
         self.connection.close()
 
-    def send(self, message, encrypt = True):
-        if encrypt:
-            ciphertext = self.config.get('server', 'secret')
-            aes_object = AES.new(ciphertext, AES.MODE_CBC, ciphertext[0:16])
-            message = message + ('\0' * (16 - len(message) % 16))
-            message = aes_object.encrypt(message)
+    def send(self, message):
         self.connection.send(self.config.get('server', 'token') + message)
-
-    def decrypt(self, message):
-        ciphertext = self.config.get('server', 'secret')
-        aes_object = AES.new(ciphertext, AES.MODE_CBC, ciphertext[0:16])
-        return aes_object.decrypt(message).strip()
 
 class ConnectorException(Exception):
     """docstring for ConnectorException"""

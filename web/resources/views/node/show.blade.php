@@ -25,12 +25,17 @@
                                 <td>Status</td>
                                 <td>
                                     <span class="label label-danger">disconnected</span>
-                                    <span class="label label-success">connected</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>Latest active at</td>
-                                <td>{{ \Redis::get('node:latest_active:'.$node->id) }}</td>
+                                <td>{{ \Redis::get('node:latest_active:'.$node->id) ?: 'never' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Client token</td>
+                                <td>
+                                    {{ $node->token }}
+                                </td>
                             </tr>
                             <tr>
                                 <td>Secret key</td>

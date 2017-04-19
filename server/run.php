@@ -35,13 +35,5 @@ if (!file_exists($configPath . 'config.php')) {
 $config = require $configPath . 'config.php';
 $swooleConfig = require $configPath . 'swoole.php';
 
-$apiConfig = require $configPath . 'api.php';
-$api = new \CronRun\Api($apiConfig, $swooleConfig);
-$apiProcess = new swoole_process([$api, 'run']);
-$apiProcess->name("cronrun api");
-$apiProcess->start();
-sleep(1);
 $server = new \CronRun\Server($config, $swooleConfig);
-$serverProcess = new swoole_process([$server, 'run']);
-$serverProcess->name('cronrun server');
-$serverProcess->start();
+$server->run();

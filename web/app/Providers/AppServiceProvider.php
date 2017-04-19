@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Server\SwooleConfigrator;
+use App\Services\Server\SwooleServer;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -41,6 +43,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(SwooleServer::class, function ($app) {
+            return new SwooleServer(new SwooleConfigrator);
+        });
     }
 }

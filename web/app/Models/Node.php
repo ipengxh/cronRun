@@ -8,7 +8,7 @@ class Node extends Model
 {
     protected $table = 'nodes';
 
-    protected $fillable = ['name', 'key', 'owner'];
+    protected $fillable = ['name', 'token', 'key', 'owner'];
 
     protected $dates = ['created_at', 'updated_at'];
 
@@ -25,7 +25,7 @@ class Node extends Model
     public function scopeOwn($query)
     {
         $permissions = NodePermission::whereUserId(\Auth::user()->id)
-        ->get();
+            ->get();
         return $query->whereIn('id', array_column($permissions->toArray(), 'node_id'));
     }
 }

@@ -18,7 +18,8 @@ class Server
         'delete', // client delete a task
         'beat', // heart beat
         'log', // send task log to server
-        'bye',
+        'bye', // client down
+        'info', // get client information
     ];
 
     public function __construct($config, $swoole)
@@ -36,10 +37,11 @@ class Server
             $server->send($fd, 'connected');
         });
         $this->server->on('receive', function ($server, $fd, $from_id, $data) {
-            $key = "6b6e7abf3a2b0b260a5afea196503b72";
+            $key = "a8cbb1c06ec1f8813eff915ca4a3c91d";
             $token = substr($data, 0, 32);
+            $client = $this->getClient($token);
             $data = substr($data, 32);
-            $message = json_decode(trim($this->decode($data, $key)));
+            $message = json_decode(trim($data, $key));
             if (in_array($message->action, $this->access)) {
                 $this->{$message->action}($server, $fd, $message);
             }
@@ -50,10 +52,15 @@ class Server
         });
     }
 
+    private function getClient($token)
+    {
+
+    }
+
     private function register($server, $fd, $data)
     {
-        $key = "6b6e7abf3a2b0b260a5afea196503b72";
-        $content = $this->encode(file_get_contents('/mnt/workspace/cronRun/server/docs/API.md'), $key);
+        $key = "a8cbb1c06ec1f8813eff915ca4a3c91d";
+        $content = file_get_contents('/mnt/workspace/cronRun/server/docs/API.md');
         // max message length is 4GBytes, should be enough...
         $message = '0x' . str_pad(dechex(strlen($content)), 8, '0', STR_PAD_LEFT) . $content;
         $server->send($fd, $message);
@@ -67,18 +74,6 @@ class Server
     private function init()
     {
         $this->server = new swoole_server($this->config['listen'], $this->config['listen_port']);
-    }
-
-    private function decode($message, $password)
-    {
-        $iv = substr($password, 0, 16);
-        return openssl_decrypt($message, 'aes-256-cbc', $password, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
-    }
-
-    private function encode($message, $password)
-    {
-        $iv = substr($password, 0, 16);
-        return openssl_encrypt($message, 'aes-256-cbc', $password, true, $iv);
     }
 
     public function run()

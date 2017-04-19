@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateNodes extends Migration
 {
@@ -16,10 +16,11 @@ class CreateNodes extends Migration
             $table->increments('id');
 
             $table->string('name');
-            $table->string('key');
+            $table->string('token', 32);
+            $table->string('key', 32);
 
             $table->integer('owner')->unsigned()
-            ->comment = "the user id of node creator";
+                ->comment = "the user id of node creator";
 
             $table->timestamps();
 
@@ -31,9 +32,9 @@ class CreateNodes extends Migration
             $table->integer('user_id')->unsigned();
 
             $table->foreign('node_id')->references('id')->on('nodes')
-            ->onDelete('cascade');
+                ->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')
-            ->onDelete('cascade');
+                ->onDelete('cascade');
 
             $table->unique(['node_id', 'user_id']);
 

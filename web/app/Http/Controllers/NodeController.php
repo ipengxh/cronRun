@@ -63,6 +63,7 @@ class NodeController extends Controller
             DB::beginTransaction();
             $new = [
                 'name' => $request->name,
+                'token' => md5(uniqid()),
                 'key' => md5(uniqid()),
                 'owner' => \Auth::user()->id,
             ];
@@ -77,7 +78,7 @@ class NodeController extends Controller
             DB::rollback();
             return back()->withErrors("Add node {$request->name} failed.");
         }
-        return redirect(route('node:edit', $node->id))->with('success', ["Node {$request->name} added, fill below infornmation please."]);
+        return redirect(route('node:show', $node->id))->with('success', ["Node {$request->name} added."]);
     }
 
     public function destroy($id)

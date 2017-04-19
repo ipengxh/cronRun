@@ -20,7 +20,7 @@
                                 <input type="text" class="form-control" name="name" id="name">
                             </div>
                             <div class="col-sm-1">
-                                <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                                <button type="submit" class="btn btn-primary btn-sm">Create</button>
                             </div>
                         </div>
                     </form>

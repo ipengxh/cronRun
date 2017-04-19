@@ -14,7 +14,7 @@ def connect():
         connection = connector.Connector(config_file)
         connection.connect()
         connection.register()
-        #connection.heart_beat()
+        connection.heart_beat()
         connection.listen()
     except connector.ConnectorException, e:
         print "Error: " + e.message
