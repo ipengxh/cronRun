@@ -1,7 +1,7 @@
 <?php
 namespace App\Services\Server;
 
-use App\Models\Node;
+use Exception;
 use swoole_server;
 
 /**
@@ -13,21 +13,10 @@ class SwooleServer
 
     protected $nodes = [];
 
-    protected $access = [
-        'register', // register
-        'test', // connection test
-        'add', // client create a new task
-        'update', // client update an exists task
-        'delete', // client delete a task
-        'beat', // heart beat
-        'log', // send task log to server
-        'bye', // client down
-        'info', // get client information
-    ];
-
-    public function __construct(SwooleConfigrator $config)
+    public function __construct(SwooleConfigrator $config, Connection $connection)
     {
         $this->config = $config;
+        $this->connection = $connection;
     }
 
     public function fire()
@@ -45,50 +34,25 @@ class SwooleServer
 
     protected function boot()
     {
-        $this->server->on('connect', function ($server, $fd) {
+        $this->server->on('connect', function ($server, $fd, $from_id) {
             echo "Client {$fd} Connect.\n";
-            $server->send($fd, 'connected');
         });
         $this->server->on('receive', function ($server, $fd, $from_id, $data) {
-            $node = $this->getNode($data);
-            $message = $this->getMessage($data);
-            if (in_array($message->action, $this->access)) {
-                $this->{$message->action}($server, $fd, $node, $message);
+            try {
+                $this->connection->handle($server, $fd, $from_id, $data);
+            } catch (Exception $e) {
+                $response = [
+                    'status' => 'error',
+                    'message' => $e->getMessage() . " @line" . $e->getLine(),
+                    'code' => $e->getCode(),
+                ];
+                $server->send($fd, ClientConnection::buildMessage($response));
             }
-            echo "Client({$fd}) is doing {$message->action} with a message: {$message->message}, from id: {$from_id}\n";
         });
-        $this->server->on('close', function ($server, $fd) {
+        $this->server->on('close', function ($server, $fd, $from_id) {
+            $this->connection->close($fd);
             echo "Client {$fd}: Close.\n";
         });
         $this->server->start();
-    }
-
-    private function getMessage($data)
-    {
-        $trimedData = substr($data, 32);
-        return json_decode(trim($trimedData, $this->getNode($data)->key));
-    }
-
-    private function getNode($data)
-    {
-        $token = $this->getToken($data);
-        return $this->nodes[$token] ?? $this->nodes[$token] = Node::where('token', $token)->first();
-    }
-
-    private function getToken($data)
-    {
-        return substr($data, 0, 32);
-    }
-
-    private function register($server, $fd, $node)
-    {
-        // max message length is 4GBytes, should be enough...
-        $message = '0x' . str_pad(dechex(strlen($node->toJson())), 8, '0', STR_PAD_LEFT) . $node->toJson();
-        $server->send($fd, $message);
-    }
-
-    private function beat($server, $fd, $data)
-    {
-        return;
     }
 }

@@ -7,7 +7,7 @@ class matrix():
     """docstring for CronRun"""
     def __init__(self, config_file):
         # init server connector
-        self.connector = connector.connector(config_file)
+        self.connector = connector.Connector(config_file)
         self.config_file = config_file
 
     """boot the cronRun"""

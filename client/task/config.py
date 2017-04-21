@@ -52,11 +52,6 @@ class new():
         notifier = pyinotify.Notifier(WatchManager, handler)
         notifier.loop()
 
-class Scaner():
-    """docstring for Scaner"""
-    def __init__(self, configPath):
-        self.configPath = configPath
-
 class EventHandler(pyinotify.ProcessEvent):
     logging.basicConfig(level = logging.INFO,filename='/tmp/monitor.log')
     logging.info("Starting monitor...")

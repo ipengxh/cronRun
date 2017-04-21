@@ -5,18 +5,18 @@ import time, threading, sys, Queue, subprocess
 from ConfigParser import ConfigParser
 import setproctitle
 
-class scan():
+class ScheduleConfig():
     """docstring for scan"""
-    def __init__(self, configPath):
-        self.configPath = configPath
+    def __init__(self, config_path):
+        self.config_path = config_path
 
     def all(self):
-        files = []
-        for (dirPath, dirNames, fileNames) in walk(self.configPath):
-            #print dirPath
-            for fileName in fileNames:
-                files.extend([dirPath + '/' + fileName])
-        return files
+        config_files = []
+        for (dir_path, dir_names, file_names) in walk(self.config_path):
+            #print dir_path
+            for file_name in file_names:
+                config_files.extend([dir_path+'/'+file_name])
+        return config_files
 
     def new_thread(self):
         for task in self.all():

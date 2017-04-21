@@ -16,11 +16,6 @@ class SwooleConfigrator
         $this->load();
     }
 
-    public function reload()
-    {
-
-    }
-
     public function load()
     {
         return $this->configuration = config('swoole');

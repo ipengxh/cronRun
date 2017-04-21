@@ -3,53 +3,70 @@ from Crypto.Cipher import AES
 import base64
 import ConfigParser
 import json, sys, os, setproctitle, time
+from socket import error as socket_error
 
 class Connector():
     """docstring for Connector"""
     def __init__(self, config):
         self.config = ConfigParser.ConfigParser()
         self.config.read(config)
+        self.token = self.config.get('server', 'token')
 
     def test(self):
-        self.connect()
-        self.send(message = 'connect test')
-        self.close()
+        try:
+            self.connect()
+            data = {
+                'action': 'test',
+                'token': self.token,
+            }
+            self.connection.send(json.dumps(data))
+            print self.get_response()['data']
+            self.connection.close()
+        except socket_error as e:
+            print "Oops, unable to connect to the server"
+        else:
+            pass
+        finally:
+            self.connection.close()
 
     def connect(self):
         print "Try to connect to server %s:%s" %(self.config.get('server', 'ip'), self.config.get('server', 'port'))
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connection.connect(self.address())
-        if 'connected' != self.connection.recv(512):
-            raise ConnectorException('Server is alive but refuse this connection.')
-        else:
-            return True
+
+    def reconnect(self):
+        self.connect()
 
     def register(self):
         data = {
             'action': 'register',
-            'server_token': self.config.get('server', 'token'),
+            'token': self.token,
             'os': os.uname(),
-            'message': 'register'
         }
-        self.send(json.dumps(data))
-        message_length = int(self.connection.recv(10), 16)
-        chunks = []
-        while message_length > 0:
-            chunk = self.connection.recv(512)
-            chunks.append(chunk)
-            message_length = message_length - 512
-        message = b''.join(chunks)
-        print message
+        self.connection.send(json.dumps(data))
+        data = self.get_response()
+        if data['status'] == 'error':
+            print 'Server response: ', data['message']
+            print 'Error code: ', data['code']
+            sys.exit()
+        tasks = data['data']
+        for task in tasks:
+            with open('schedules/' + task['app']['token'] + '.ini', 'w') as config_file:
+                config = ConfigParser.ConfigParser()
+                for (section_name, section) in task.items():
+                    config.add_section(section_name)
+                    for (setting_key, setting_value) in section.items():
+                        config.set(section_name, setting_key, setting_value)
+                config.write(config_file)
 
-    def heart_beat(self):
-        server_token = self.config.get('server', 'token')
+    def keep_alive(self):
         while True:
             data = {
-                'action': 'beat',
-                'server_token': server_token,
+                'action': 'keepalive',
+                'token': self.token,
                 'message': 'heart beat'
             }
-            self.send(json.dumps(data))
+            self.connection.send(json.dumps(data))
             time.sleep(30)
 
     def address(self):
@@ -62,11 +79,14 @@ class Connector():
             data = self.connection.recv(512)
             print "data recived: ", data
 
-    def close(self):
-        self.connection.close()
-
-    def send(self, message):
-        self.connection.send(self.config.get('server', 'token') + message)
+    def get_response(self):
+        message_length = int(self.connection.recv(10), 16)
+        chunks = []
+        while message_length > 0:
+            chunk = self.connection.recv(512)
+            chunks.append(chunk)
+            message_length = message_length - 512
+        return json.loads(b''.join(chunks))
 
 class ConnectorException(Exception):
     """docstring for ConnectorException"""

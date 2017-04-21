@@ -10,7 +10,7 @@ class Project extends Model
         'name',
         'key',
         'owner',
-        'node_id'
+        'node_id',
     ];
 
     public function user()
@@ -21,6 +21,11 @@ class Project extends Model
     public function node()
     {
         return $this->belongsTo(Node::class);
+    }
+
+    public function task()
+    {
+        return $this->hasMany(Task::class);
     }
 
     public function scopeNode($query, $id)
